@@ -1,2 +1,2 @@
-# macOS_PKG_Signer
+# macOS Batch PKG Signer
 Applescript App to batch sign Installer Packages.
