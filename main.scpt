@@ -7,7 +7,7 @@ with timeout of 30000 seconds
 		set identitySearch to do shell script "security find-identity -v | grep Installer"
 		set identityFound to (second word of first paragraph of identitySearch)
 		set dt to "/Users/" & currentUser & "/Desktop/"
-		set datedPath to "/" & folderDate & "/"
+		set datedPath to folderDate & "/"
 		set theImageCount to length of thePackages
 	end tell
 end timeout
@@ -15,6 +15,9 @@ set progress total steps to theImageCount
 set progress completed steps to 0
 set progress description to "Signing Packages..."
 set progress additional description to "Preparing to sign."
+tell application "Finder"
+	if not (exists folder folderDate) then make new folder at desktop with properties {name:folderDate}
+end tell
 repeat with index from 1 to the count of thePackages
 	set currentPackage to item index of thePackages
 	set unsignedPath to POSIX path of currentPackage
