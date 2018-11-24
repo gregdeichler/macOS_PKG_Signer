@@ -1,12 +1,16 @@
-tell application "Finder"
-	set dialogText to " Packages 📦 Signed 📝"
-	set thePackages to every item of (choose file with prompt "Please select packages to sign:" of type {"pkg", "dmg"} with multiple selections allowed) as list
-	set currentUser to do shell script "whoami"
-	set identitySearch to do shell script "security find-identity -v | grep Installer"
-	set identityFound to (second word of first paragraph of identitySearch)
-	set dt to "/Users/" & currentUser & "/Desktop/"
-	set theImageCount to length of thePackages
-end tell
+with timeout of 30000 seconds
+	tell application "Finder"
+		set dialogText to " Packages 📦 Signed 📝"
+		set thePackages to every item of (choose file with prompt "Please select packages to sign:" of type {"pkg", "dmg"} with multiple selections allowed) as list
+		set folderDate to do shell script "date \"+%Y-%m-%d\""
+		set currentUser to do shell script "whoami"
+		set identitySearch to do shell script "security find-identity -v | grep Installer"
+		set identityFound to (second word of first paragraph of identitySearch)
+		set dt to "/Users/" & currentUser & "/Desktop/"
+		set datedPath to "/" & folderDate & "/"
+		set theImageCount to length of thePackages
+	end tell
+end timeout
 set progress total steps to theImageCount
 set progress completed steps to 0
 set progress description to "Signing Packages..."
@@ -17,7 +21,7 @@ repeat with index from 1 to the count of thePackages
 	set quotedUnsignedPath to quoted form of unsignedPath
 	set unsignedPackage to name of (info for currentPackage)
 	set progress additional description to "Signing Package " & unsignedPackage & " " & index & " of " & theImageCount
-	set quotedsignedPath to quoted form of (dt & unsignedPackage)
+	set quotedsignedPath to quoted form of (dt & datedPath & unsignedPackage)
 	set theCommand to "productsign --sign " & identityFound & " " & quotedUnsignedPath & " " & quotedsignedPath & ""
 	do shell script "" & theCommand & ""
 	set progress completed steps to index
